@@ -1,3 +1,4 @@
+from Game import Game
 from enum import Enum
 
 
@@ -16,6 +17,18 @@ class Piece:
         self.color = color
         self.x = x
         self.y = y
+    
+    def moves(self):
+
+
+        moves = self.piece.moves()
+
+        for move in moves:
+            Game.TILES
+
+
+        pass
+
 
 
 

@@ -1,6 +1,6 @@
 
 from Piece import Piece, Assassin, Chief, Diplomat, Militants, Necromobile, Reporter
-from Config import Config
+from Game import Game
 
 class Player:
 
@@ -15,13 +15,13 @@ class Player:
         if color == Piece.COLOR.green:
             pass
         elif color == Piece.COLOR.yellow:
-            x,y = Config.COLUMN_COUNT-1,0
+            x,y = Game.COLUMN_COUNT-1,0
             i,j = -1,1
         elif color == Piece.COLOR.red:
-            x,y = 0,Config.ROW_COUNT-1
+            x,y = 0,Game.ROW_COUNT-1
             i,j = 1,-1
         elif color == Piece.COLOR.blue:
-            x,y = Config.COLUMN_COUNT-1,Config.ROW_COUNT-1
+            x,y = Game.COLUMN_COUNT-1,Game.ROW_COUNT-1
             i,j = -1,-1
 
 
