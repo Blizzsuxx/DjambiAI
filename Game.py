@@ -9,6 +9,8 @@ class Game:
 
     TILES = None
 
+    
+
     @staticmethod
     def init():
         Game.TILES = [[None]*Game.COLUMN_COUNT for i in range(Game.ROW_COUNT)]

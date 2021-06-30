@@ -19,16 +19,36 @@ class Piece:
         self.x = x
         self.y = y
     
-    def moves(self):
-
+    @staticmethod
+    def raycast(tile, directionX, directionY):
         movesList = []
-        
+        currentPointX = tile.x
+        currentPointY = tile.y
+        currentPointX += directionX
+        currentPointY += directionY
+        while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT:
+            destination = Game.TILES[currentPointX][currentPointY]
 
-        Game.TILES
+            if destination.piece is not None:
+                if destination.piece.color != tile.piece.color:
+                    newMove = Move(tile.piece, destination)
+                    movesList.append(newMove)
+                return movesList
 
-
+            newMove = Move(tile.piece, destination)
+            movesList.append(newMove)
+            currentPointX += directionX
+            currentPointY += directionY
+        return movesList
+    
+    def moves(self):
+        movesList = []
+        for direction in Move.DIRECTIONS:
+            movesList.extend(Piece.raycast(Game.TILES[self.x][self.y], direction[0], direction[1]))
 
         return movesList
+    
+
 
 
 
