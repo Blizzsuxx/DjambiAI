@@ -38,13 +38,14 @@ def main():
     
     for i in range(Game.COLUMN_COUNT):
         for j in range(Game.ROW_COUNT):
-            button = Tile()
+            button = Tile(i, j)
             Game.TILES[i][j] = button
 
             button.setColor(Game.COLOR_TILE[(j+i)%2])
             button.size = (Game.TYLE_SIZE, Game.TYLE_SIZE)
             button.setMinimumSize(QtCore.QSize(Game.TYLE_SIZE, Game.TYLE_SIZE))
-            grid.addWidget(button, i, j)
+            button.clicked.connect(button.clicked_event)
+            grid.addWidget(button, j, i)
     
             
     for player in Game.PLAYERS:
@@ -54,6 +55,7 @@ def main():
             button.setColor(piece.color.name)
             button.setText(piece.__class__.__name__ )
             button.piece = piece
+
 
     window.move(500,50)
     app.exec()

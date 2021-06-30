@@ -4,10 +4,12 @@ from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 class Tile(QtWidgets.QPushButton):
 
-    __slots__ = 'piece'
-    def __init__(self) -> None:
+    __slots__ = 'piece', 'x', 'y'
+    def __init__(self, x, y) -> None:
         super().__init__()
         self.piece = None
+        self.x = x
+        self.y = y
     
     
     def setColor(self, color):
@@ -17,17 +19,15 @@ class Tile(QtWidgets.QPushButton):
 
         return
     
-    def clicked(self, checked: bool) -> None:
+    def clicked_event(self) -> None:
 
         Game.draw()
-
         if self.piece is not None:
             moves = self.piece.moves()
             for move in moves:
-                Game.TILES[move.x][move.y].setColor("red")
-        
+                Game.TILES[move.tile.x][move.tile.y].setColor("orange")
+        print(self.x, self.y)
+        return
 
-
-        return super().clicked(checked=checked)
 
     

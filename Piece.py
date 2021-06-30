@@ -1,3 +1,4 @@
+from Move import Move
 from Game import Game
 from enum import Enum
 
@@ -20,14 +21,14 @@ class Piece:
     
     def moves(self):
 
+        movesList = []
+        
 
-        moves = self.piece.moves()
-
-        for move in moves:
-            Game.TILES
+        Game.TILES
 
 
-        pass
+
+        return movesList
 
 
 
