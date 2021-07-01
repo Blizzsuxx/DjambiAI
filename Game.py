@@ -9,6 +9,7 @@ class Game:
 
     TILES = None
 
+    SELECTED_PIECE_MOVES = None
     
 
     @staticmethod
@@ -34,4 +35,7 @@ class Game:
                 
                 button.setColor(piece.color.name)
                 
-                button.setText(piece.__class__.__name__ )
+                if piece.dead:
+                    button.setText(piece.__class__.__name__ + " DEAD")
+                else:
+                    button.setText(piece.__class__.__name__ )

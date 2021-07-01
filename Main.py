@@ -35,7 +35,8 @@ def main():
     Game.PLAYERS[3] = Player(Piece.COLOR.blue)
 
     window.setLayout(grid)
-    
+    grid.setSpacing(0)
+    grid.setContentsMargins(0,0,0,0)
     for i in range(Game.COLUMN_COUNT):
         for j in range(Game.ROW_COUNT):
             button = Tile(i, j)
