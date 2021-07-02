@@ -20,7 +20,7 @@ class Game:
 
     SELECTED_PIECE_MOVES = None
     CENTER_TILE = None
-    
+    CENTER_TILE_VIEW = None
 
     @staticmethod
     def init():
@@ -35,15 +35,15 @@ class Game:
 
         for i in range(Game.COLUMN_COUNT):
             for j in range(Game.ROW_COUNT):
-                button = Game.TILES[i][j]
+                button = Game.TILES_VIEW[i][j]
                 button.setColor(Game.COLOR_TILE[(j+i)%2])
 
                 button.setText("")
         
-        Game.CENTER_TILE.setColor("grey")        
+        Game.CENTER_TILE_VIEW.setColor("grey")        
         for player in Game.PLAYERS:
             for piece in player.pieces:
-                button = Game.TILES[piece.x][piece.y]
+                button = Game.TILES_VIEW[piece.x][piece.y]
                 
                 button.setColor(piece.color.name)
                 

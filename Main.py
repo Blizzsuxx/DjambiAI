@@ -1,8 +1,8 @@
-from Tile import CustomButton, Tile, customButton
+from Tile import CustomButton, Tile
 from Player import Player
 from Piece import Piece
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QApplication, QPushButton, QWidget, QGridLayout, QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel
 
 # Only needed for access to command line arguments
 import sys
@@ -49,11 +49,12 @@ def main():
             button.clicked.connect(button.clicked_event)
             grid.addWidget(button, j, i)
     
+    Game.CENTER_TILE_VIEW = Game.TILES_VIEW[Game.COLUMN_COUNT // 2][Game.ROW_COUNT // 2]
     Game.CENTER_TILE = Game.TILES[Game.COLUMN_COUNT // 2][Game.ROW_COUNT // 2]
             
     for player in Game.PLAYERS:
         for piece in player.pieces:
-            button = Game.TILES[piece.x][piece.y]
+            button = Game.TILES_VIEW[piece.x][piece.y]
             
             button.setColor(piece.color.name)
             button.setText(piece.__class__.__name__ )
