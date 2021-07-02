@@ -154,25 +154,31 @@ class Reporter(Piece):
         self.x = move.tile.x
         self.y = move.tile.y
         bodyMoves = []
-        tile = Game.TILES[move.tile.x-1][move.tile.y]
-        if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
-            newMove = Move(tile.piece, tile, tile)
-            bodyMoves.append(newMove)
-        tile = Game.TILES[move.tile.x+1][move.tile.y]
-        if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
-            newMove = Move(tile.piece, tile, tile)
-            
-            bodyMoves.append(newMove)
-        tile = Game.TILES[move.tile.x][move.tile.y-1]
-        if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
-            newMove = Move(tile.piece, tile, tile)
-            
-            bodyMoves.append(newMove)
-        tile = Game.TILES[move.tile.x][move.tile.y+1]
-        if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
-            newMove = Move(tile.piece, tile, tile)
-            
-            bodyMoves.append(newMove)
+        if move.tile.x - 1 >= 0:
+            tile = Game.TILES[move.tile.x-1][move.tile.y]
+            if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
+                newMove = Move(tile.piece, tile, tile)
+                bodyMoves.append(newMove)
+        
+        if move.tile.x+1 < Game.COLUMN_COUNT:
+            tile = Game.TILES[move.tile.x+1][move.tile.y]
+            if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
+                newMove = Move(tile.piece, tile, tile)
+                bodyMoves.append(newMove)
+
+        if move.tile.y - 1 >= 0:
+            tile = Game.TILES[move.tile.x][move.tile.y-1]
+            if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
+                newMove = Move(tile.piece, tile, tile)
+                
+                bodyMoves.append(newMove)
+        
+        if move.tile.y+1 < Game.ROW_COUNT:
+            tile = Game.TILES[move.tile.x][move.tile.y+1]
+            if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
+                newMove = Move(tile.piece, tile, tile)
+                
+                bodyMoves.append(newMove)
         print(bodyMoves)
         if len(bodyMoves) == 0:
             bodyMoves = None

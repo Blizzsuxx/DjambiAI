@@ -6,11 +6,12 @@ class Game:
     COLUMN_COUNT = 9
     COLOR_TILE = ["black", "white"]
     TYLE_SIZE = 100
+    DEPTH = 5
     PLAYERS = [None]*4
     PREVIOUS_MOVE = None
 
     TILES = None
-
+    REAL_TILES = None
 
 
     STATES = Enum('STATES', 'select move place')
@@ -24,6 +25,8 @@ class Game:
     @staticmethod
     def init():
         Game.TILES = [[None]*Game.COLUMN_COUNT for i in range(Game.ROW_COUNT)]
+        Game.REAL_TILES = [[None]*Game.COLUMN_COUNT for i in range(Game.ROW_COUNT)]
+
 
     @staticmethod
     def draw():
