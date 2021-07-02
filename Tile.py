@@ -12,9 +12,6 @@ class customButton(QtWidgets.QPushButton):
         self.tile = tile
     
 
-
-
-
     def setColor(self, color):
 
         self.setStyleSheet("QPushButton { background-color : " + color + "; }")
@@ -83,65 +80,6 @@ class Tile():
         self.piece = None
         self.x = x
         self.y = y
-    
-    
-    def setColor(self, color):
-
-        self.setStyleSheet("QPushButton { background-color : " + color + "; }")
-
-
-        return
-    
-    def clicked_event(self) -> None:
-
-        Game.draw()
-        if self.piece is not None and not self.piece.dead:
-            Game.CURRENT_STATE = Game.STATES.move
-            moves = self.piece.moves()
-            Game.SELECTED_PIECE_MOVES = moves
-            for move in moves:
-                if move.tile.piece is not None:
-                    Game.TILES[move.tile.x][move.tile.y].setColor("purple")
-                else:
-                    Game.TILES[move.tile.x][move.tile.y].setColor("orange")
-        else:
-            Game.SELECTED_PIECE_MOVES = None
-            Game.CURRENT_STATE = Game.STATES.select
-        print(self.x, self.y)
-        return
-    
-
-
-    def mousePressEvent(self, QMouseEvent):
-        if QMouseEvent.button() == QtCore.Qt.LeftButton:
-            if Game.CURRENT_STATE == Game.STATES.select:
-                self.clicked_event()
-            elif Game.CURRENT_STATE == Game.STATES.move:
-                
-                bodyMoves = self.doMove()
-                Game.draw()
-                Game.CURRENT_STATE = Game.STATES.select
-                if bodyMoves is not None:
-                    Game.CURRENT_STATE = Game.STATES.place
-                    for move in bodyMoves:
-                        if move.tile.piece is not None:
-                            Game.TILES[move.tile.x][move.tile.y].setColor("purple")
-                        else:
-                            Game.TILES[move.tile.x][move.tile.y].setColor("orange")
-                Game.SELECTED_PIECE_MOVES = bodyMoves
-            elif Game.CURRENT_STATE == Game.STATES.place:
-                playerPickedAvailableTile = self.doMoveBody()
-                if playerPickedAvailableTile or isinstance(Game.PREVIOUS_MOVE.piece, Reporter):
-                    Game.CURRENT_STATE = Game.STATES.select
-                    Game.draw()
-        elif QMouseEvent.button() == QtCore.Qt.RightButton:
-            #do what you want here
-            if Game.CURRENT_STATE == Game.STATES.place:
-                return
-            Game.SELECTED_PIECE_MOVES = None
-            Game.CURRENT_STATE = Game.STATES.select
-            print("Right Button Clicked")
-            Game.draw()
 
 
 
