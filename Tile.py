@@ -4,7 +4,7 @@ from Game import Game
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 
-class customButton(QtWidgets.QPushButton):
+class CustomButton(QtWidgets.QPushButton):
 
     __slots__ = 'tile'
     def __init__(self, tile) -> None:
@@ -28,9 +28,9 @@ class customButton(QtWidgets.QPushButton):
             Game.SELECTED_PIECE_MOVES = moves
             for move in moves:
                 if move.tile.piece is not None:
-                    Game.TILES[move.tile.x][move.tile.y].setColor("purple")
+                    Game.TILES_VIEW[move.tile.x][move.tile.y].setColor("purple")
                 else:
-                    Game.TILES[move.tile.x][move.tile.y].setColor("orange")
+                    Game.TILES_VIEW[move.tile.x][move.tile.y].setColor("orange")
         else:
             Game.SELECTED_PIECE_MOVES = None
             Game.CURRENT_STATE = Game.STATES.select
@@ -52,9 +52,9 @@ class customButton(QtWidgets.QPushButton):
                     Game.CURRENT_STATE = Game.STATES.place
                     for move in bodyMoves:
                         if move.tile.piece is not None:
-                            Game.TILES[move.tile.x][move.tile.y].setColor("purple")
+                            Game.TILES_VIEW[move.tile.x][move.tile.y].setColor("purple")
                         else:
-                            Game.TILES[move.tile.x][move.tile.y].setColor("orange")
+                            Game.TILES_VIEW[move.tile.x][move.tile.y].setColor("orange")
                 Game.SELECTED_PIECE_MOVES = bodyMoves
             elif Game.CURRENT_STATE == Game.STATES.place:
                 playerPickedAvailableTile = self.tile.doMoveBody()

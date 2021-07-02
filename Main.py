@@ -1,4 +1,4 @@
-from Tile import Tile
+from Tile import CustomButton, Tile, customButton
 from Player import Player
 from Piece import Piece
 from PyQt5 import QtCore
@@ -39,9 +39,10 @@ def main():
     grid.setContentsMargins(0,0,0,0)
     for i in range(Game.COLUMN_COUNT):
         for j in range(Game.ROW_COUNT):
-            button = Tile(i, j)
-            Game.TILES[i][j] = button
-
+            tile = Tile(i, j)
+            button = CustomButton(tile)
+            Game.TILES_VIEW[i][j] = button
+            Game.TILES[i][j] = tile
             button.setColor(Game.COLOR_TILE[(j+i)%2])
             button.size = (Game.TYLE_SIZE, Game.TYLE_SIZE)
             button.setMinimumSize(QtCore.QSize(Game.TYLE_SIZE, Game.TYLE_SIZE))
@@ -56,7 +57,7 @@ def main():
             
             button.setColor(piece.color.name)
             button.setText(piece.__class__.__name__ )
-            button.piece = piece
+            button.tile.piece = piece
 
     Game.draw()
     window.move(500,50)

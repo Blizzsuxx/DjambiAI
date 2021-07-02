@@ -11,7 +11,7 @@ class Game:
     PREVIOUS_MOVE = None
 
     TILES = None
-    REAL_TILES = None
+    TILES_VIEW = None
 
 
     STATES = Enum('STATES', 'select move place')
@@ -25,7 +25,7 @@ class Game:
     @staticmethod
     def init():
         Game.TILES = [[None]*Game.COLUMN_COUNT for i in range(Game.ROW_COUNT)]
-        Game.REAL_TILES = [[None]*Game.COLUMN_COUNT for i in range(Game.ROW_COUNT)]
+        Game.TILES_VIEW = [[None]*Game.COLUMN_COUNT for i in range(Game.ROW_COUNT)]
 
 
     @staticmethod
