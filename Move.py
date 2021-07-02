@@ -1,7 +1,7 @@
 
 class Move:
 
-    __slots__ = 'piece', 'tile', 'tileFrom'
+    __slots__ = 'piece', 'tile', 'tileFrom', 'bodyMove'
 
 
     DIRECTIONS = (
@@ -14,3 +14,6 @@ class Move:
         self.piece = piece
         self.tile = tile
         self.tileFrom = tileFrom
+        self.bodyMove = None
+    
+

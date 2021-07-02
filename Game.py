@@ -1,3 +1,4 @@
+from enum import Enum
 
 class Game:
 
@@ -6,10 +7,18 @@ class Game:
     COLOR_TILE = ["black", "white"]
     TYLE_SIZE = 100
     PLAYERS = [None]*4
+    PREVIOUS_MOVE = None
 
     TILES = None
 
+
+
+    STATES = Enum('STATES', 'select move place')
+
+    CURRENT_STATE = STATES.select
+
     SELECTED_PIECE_MOVES = None
+    CENTER_TILE = None
     
 
     @staticmethod
@@ -28,7 +37,7 @@ class Game:
 
                 button.setText("")
         
-                
+        Game.CENTER_TILE.setColor("grey")        
         for player in Game.PLAYERS:
             for piece in player.pieces:
                 button = Game.TILES[piece.x][piece.y]
@@ -36,6 +45,8 @@ class Game:
                 button.setColor(piece.color.name)
                 
                 if piece.dead:
-                    button.setText(piece.__class__.__name__ + " DEAD")
+                    button.setText(piece.__class__.__name__ + " \r\nDEAD")
                 else:
                     button.setText(piece.__class__.__name__ )
+        
+        

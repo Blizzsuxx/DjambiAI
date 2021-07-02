@@ -33,11 +33,15 @@ class Piece:
                 #if destination.piece.color != tile.piece.color:
                 self.captureEvent(movesList, destination)
                 return movesList
+            
+            
+            currentPointX += directionX
+            currentPointY += directionY
+            if destination.isCenter():
+                continue
 
             newMove = Move(self, destination, Game.TILES[self.x][self.y])
             movesList.append(newMove)
-            currentPointX += directionX
-            currentPointY += directionY
         return movesList
     
     def moves(self):
@@ -62,13 +66,13 @@ class Piece:
         if move.tile.piece is not None:
             move.tile.piece.dead = True
             bodyMoves = []
-            for direction in Move.DIRECTIONS:
-                destination = Game.TILES[direction[0]][direction[1]]
-                if destination.piece is not None:
-                    continue
+            for column in Game.TILES:
+                for destination in column:
+                    if destination.piece is not None and destination.piece is not self or destination.isCenter():
+                        continue
 
-                newMove = Move(move.tile.piece, destination, Game.TILES[move.tile.x][move.tile.y])
-                bodyMoves.append(newMove)
+                    newMove = Move(move.tile.piece, destination, Game.TILES[move.tile.x][move.tile.y])
+                    bodyMoves.append(newMove)
 
         return bodyMoves
 
@@ -87,12 +91,53 @@ class Chief(Piece):
 
     def __init__(self, color, x, y) -> None:
         super().__init__(color, x, y)
+    
+
+
+    def raycast(self, directionX, directionY):
+        movesList = []
+        currentPointX = self.x
+        currentPointY = self.y
+        currentPointX += directionX
+        currentPointY += directionY
+        while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT:
+            destination = Game.TILES[currentPointX][currentPointY]
+            if destination.piece is not None:
+                #if destination.piece.color != tile.piece.color:
+                self.captureEvent(movesList, destination)
+                return movesList
+            
+            
+            currentPointX += directionX
+            currentPointY += directionY
+
+            newMove = Move(self, destination, Game.TILES[self.x][self.y])
+            movesList.append(newMove)
+        return movesList
+
+
 
 
 class Assassin(Piece):
 
     def __init__(self, color, x, y) -> None:
         super().__init__(color, x, y)
+    
+
+
+    #assasin puts the body where he came from
+    def doMove(self, move):
+        self.x = move.tile.x
+        self.y = move.tile.y
+        bodyMoves = None
+        if move.tile.piece is not None:
+            move.tile.piece.dead = True
+            bodyMoves = []
+            newMove = Move(move.tile.piece,Game.TILES[move.tileFrom.x][move.tileFrom.y], Game.TILES[move.tile.x][move.tile.y])
+            bodyMoves.append(newMove)
+            
+
+        return bodyMoves
 
 
 class Reporter(Piece):
@@ -103,6 +148,35 @@ class Reporter(Piece):
     #reporter cannot capture pieces by going over them
     def captureEvent(self, movesList, destination):
         return 
+    
+
+    def doMove(self, move):
+        self.x = move.tile.x
+        self.y = move.tile.y
+        bodyMoves = []
+        tile = Game.TILES[move.tile.x-1][move.tile.y]
+        if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
+            newMove = Move(tile.piece, tile, tile)
+            bodyMoves.append(newMove)
+        tile = Game.TILES[move.tile.x+1][move.tile.y]
+        if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
+            newMove = Move(tile.piece, tile, tile)
+            
+            bodyMoves.append(newMove)
+        tile = Game.TILES[move.tile.x][move.tile.y-1]
+        if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
+            newMove = Move(tile.piece, tile, tile)
+            
+            bodyMoves.append(newMove)
+        tile = Game.TILES[move.tile.x][move.tile.y+1]
+        if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
+            newMove = Move(tile.piece, tile, tile)
+            
+            bodyMoves.append(newMove)
+        print(bodyMoves)
+        if len(bodyMoves) == 0:
+            bodyMoves = None
+        return bodyMoves
 
 
 class Militants(Piece):
@@ -126,11 +200,21 @@ class Militants(Piece):
                 self.captureEvent(movesList, destination)
                 return movesList
 
-            newMove = Move(self, destination, Game.TILES[self.x][self.y])
-            movesList.append(newMove)
+            
             currentPointX += directionX
             currentPointY += directionY
+            if destination.isCenter():
+                continue
+
+            newMove = Move(self, destination, Game.TILES[self.x][self.y])
+            movesList.append(newMove)
         return movesList
+    
+
+    def captureEvent(self, movesList, destination):
+        if destination.isCenter():
+            return
+        return super().captureEvent(movesList, destination)
 
 
 class Diplomat(Piece):
@@ -139,10 +223,28 @@ class Diplomat(Piece):
         super().__init__(color, x, y)
     
     def captureEvent(self, movesList, destination):
-        #Diplomat cannot attack, that is move, friendly pieces
-        if destination.piece.color != self.color:
+        #Diplomat cannot attack, that is move, friendly pieces or dead pieces
+        if destination.piece.color != self.color and not destination.piece.dead:
             newMove = Move(self, destination, Game.TILES[self.x][self.y])
             movesList.append(newMove)
+        
+
+    def doMove(self, move):
+        #Diplomat does not kill pieces
+        self.x = move.tile.x
+        self.y = move.tile.y
+        bodyMoves = None
+        if move.tile.piece is not None:
+            bodyMoves = []
+            for column in Game.TILES:
+                for destination in column:
+                    if destination.piece is not None and destination.piece is not self or destination.isCenter():
+                        continue
+
+                    newMove = Move(move.tile.piece, destination, Game.TILES[move.tile.x][move.tile.y])
+                    bodyMoves.append(newMove)
+
+        return bodyMoves
 
 
 class Necromobile(Piece):

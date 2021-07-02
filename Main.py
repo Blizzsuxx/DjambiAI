@@ -48,6 +48,7 @@ def main():
             button.clicked.connect(button.clicked_event)
             grid.addWidget(button, j, i)
     
+    Game.CENTER_TILE = Game.TILES[Game.COLUMN_COUNT // 2][Game.ROW_COUNT // 2]
             
     for player in Game.PLAYERS:
         for piece in player.pieces:
@@ -57,7 +58,7 @@ def main():
             button.setText(piece.__class__.__name__ )
             button.piece = piece
 
-
+    Game.draw()
     window.move(500,50)
     app.exec()
 
