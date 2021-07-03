@@ -1,5 +1,5 @@
 from enum import Enum
-
+import copy
 class Game:
 
     ROW_COUNT = 9
@@ -7,6 +7,15 @@ class Game:
     COLOR_TILE = ["black", "white"]
     TYLE_SIZE = 100
     DEPTH = 5
+    STATES = Enum('STATES', 'select move place')
+
+    HEURISTICS_UPPER_BOUND = 168
+
+
+
+    CURRENT_STATE = STATES.select
+
+
     PLAYERS = [None]*4
     PREVIOUS_MOVE = None
 
@@ -14,9 +23,7 @@ class Game:
     TILES_VIEW = None
 
 
-    STATES = Enum('STATES', 'select move place')
 
-    CURRENT_STATE = STATES.select
 
     SELECTED_PIECE_MOVES = None
     CENTER_TILE = None
@@ -30,8 +37,6 @@ class Game:
 
     @staticmethod
     def draw():
-
-
 
         for i in range(Game.COLUMN_COUNT):
             for j in range(Game.ROW_COUNT):
@@ -52,4 +57,6 @@ class Game:
                 else:
                     button.setText(piece.__class__.__name__ )
         
-        
+    @staticmethod
+    def copyTiles(tiles):
+        return copy.deepcopy(tiles)

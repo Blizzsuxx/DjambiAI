@@ -1,10 +1,15 @@
 
+from Game import Game
+
+
 class Node:
 
-    __slots__ = 'move', 'children', 'player', 'values'
+    __slots__ = 'move', 'children', 'player', 'values', 'playerId'
 
-    def __init__(self, boardState, player) -> None:
-        self.move = boardState
+    def __init__(self, move, playerId) -> None:
+        self.move = move
         self.children = []
-        self.player = player
+        self.playerId = playerId
+        self.player = Game.PLAYERS[playerId]
         self.values = [0,0,0,0]
+    

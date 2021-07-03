@@ -1,8 +1,9 @@
+from MinMaxTree import MinMaxTree
 from Tile import CustomButton, Tile
 from Player import Player
 from Piece import Piece
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel
+from PyQt5.QtWidgets import QApplication, QPushButton, QSpinBox, QTextEdit, QWidget, QGridLayout, QLabel
 
 # Only needed for access to command line arguments
 import sys
@@ -59,7 +60,26 @@ def main():
             button.setColor(piece.color.name)
             button.setText(piece.__class__.__name__ )
             button.tile.piece = piece
+    
+    m = MinMaxTree()
+    m.getMove()
+    doAction = QPushButton()
+    doAction.setText("Do")
+    undoAction = QPushButton()
+    undoAction.setText("Undo")
 
+    doAction.setMinimumSize(QtCore.QSize(Game.TYLE_SIZE, Game.TYLE_SIZE))
+    undoAction.setMinimumSize(QtCore.QSize(Game.TYLE_SIZE, Game.TYLE_SIZE))
+    
+
+    read = QSpinBox()
+
+    doAction.clicked.connect(lambda : m.doMove(read.value))
+    undoAction.clicked.connect(lambda : m.undoMove(read.value))
+    grid.addWidget(doAction)
+    grid.addWidget(undoAction)
+    grid.addWidget(read)
+    
     Game.draw()
     window.move(500,50)
     app.exec()

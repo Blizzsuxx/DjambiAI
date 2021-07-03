@@ -1,4 +1,4 @@
-from Move import Move
+import Move
 from Game import Game
 from enum import Enum
 
@@ -40,13 +40,13 @@ class Piece:
             if destination.isCenter():
                 continue
 
-            newMove = Move(self, destination, Game.TILES[self.x][self.y])
+            newMove = Move.Move(self, destination, Game.TILES[self.x][self.y])
             movesList.append(newMove)
         return movesList
     
     def moves(self):
         movesList = []
-        for direction in Move.DIRECTIONS:
+        for direction in Move.Move.DIRECTIONS:
             movesList.extend(self.raycast(direction[0], direction[1]))
 
         return movesList
@@ -55,13 +55,12 @@ class Piece:
     # this gets overriden by other pieces
     def captureEvent(self, movesList, destination):
         if not destination.piece.dead:
-            newMove = Move(self, destination, Game.TILES[self.x][self.y])
+            newMove = Move.Move(self, destination, Game.TILES[self.x][self.y])
             movesList.append(newMove)
 
 
     def doMove(self, move):
-        self.x = move.tile.x
-        self.y = move.tile.y
+        self.takeMoveCoordinates(move)
         bodyMoves = None
         if move.tile.piece is not None:
             move.tile.piece.dead = True
@@ -71,10 +70,38 @@ class Piece:
                     if destination.piece is not None and destination.piece is not self or destination.isCenter():
                         continue
 
-                    newMove = Move(move.tile.piece, destination, Game.TILES[move.tile.x][move.tile.y])
+                    newMove = Move.Move(move.tile.piece, destination, Game.TILES[move.tile.x][move.tile.y])
                     bodyMoves.append(newMove)
 
         return bodyMoves
+    
+
+    def bodyPlacementMoves(self, move):
+        #the AI checks just around the piece if he can place the body
+        bodyMoves = None
+        if move.tile.piece is not None:
+            bodyMoves = []
+            x = move.tile.x
+            y = move.tile.y
+            for direction in Move.Move.DIRECTIONS:
+                if x+direction[0] >= 0 and x+direction[0] < Game.COLUMN_COUNT and y+direction[1] >= 0 and y+direction[1] < Game.ROW_COUNT:
+                    destination = Game.TILES[x+direction[0]][y+direction[1]]
+                    if destination.piece is not None and destination.piece is not self or destination.isCenter():
+                        continue
+
+                    newMove = Move.Move(move.tile.piece, destination, Game.TILES[move.tile.x][move.tile.y])
+                    bodyMoves.append(newMove)
+        move.bodyMoves = bodyMoves
+        return bodyMoves
+    
+
+    def takeMoveCoordinates(self, move):
+        self.x = move.tile.x
+        self.y = move.tile.y
+    
+    def undoMoveCoordinates(self, move):
+        self.x = move.tileFrom.x
+        self.y = move.tileFrom.y
 
 
 
@@ -111,7 +138,7 @@ class Chief(Piece):
             currentPointX += directionX
             currentPointY += directionY
 
-            newMove = Move(self, destination, Game.TILES[self.x][self.y])
+            newMove = Move.Move(self, destination, Game.TILES[self.x][self.y])
             movesList.append(newMove)
         return movesList
 
@@ -127,17 +154,25 @@ class Assassin(Piece):
 
     #assasin puts the body where he came from
     def doMove(self, move):
-        self.x = move.tile.x
-        self.y = move.tile.y
+        self.takeMoveCoordinates(move)
         bodyMoves = None
         if move.tile.piece is not None:
             move.tile.piece.dead = True
             bodyMoves = []
-            newMove = Move(move.tile.piece,Game.TILES[move.tileFrom.x][move.tileFrom.y], Game.TILES[move.tile.x][move.tile.y])
+            newMove = Move.Move(move.tile.piece,Game.TILES[move.tileFrom.x][move.tileFrom.y], Game.TILES[move.tile.x][move.tile.y])
             bodyMoves.append(newMove)
             
 
         return bodyMoves
+    
+
+    def bodyPlacementMoves(self, move):
+        newMove = Move.Move(move.tile.piece,Game.TILES[move.tileFrom.x][move.tileFrom.y], Game.TILES[move.tile.x][move.tile.y])
+        lista = []
+        lista.append(newMove)
+        newMove.bodyMoves = lista
+        move.bodyMoves = lista
+        return lista
 
 
 class Reporter(Piece):
@@ -151,37 +186,71 @@ class Reporter(Piece):
     
 
     def doMove(self, move):
-        self.x = move.tile.x
-        self.y = move.tile.y
+        self.takeMoveCoordinates(move)
         bodyMoves = []
         if move.tile.x - 1 >= 0:
             tile = Game.TILES[move.tile.x-1][move.tile.y]
             if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
-                newMove = Move(tile.piece, tile, tile)
+                newMove = Move.Move(tile.piece, tile, tile)
                 bodyMoves.append(newMove)
         
         if move.tile.x+1 < Game.COLUMN_COUNT:
             tile = Game.TILES[move.tile.x+1][move.tile.y]
             if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
-                newMove = Move(tile.piece, tile, tile)
+                newMove = Move.Move(tile.piece, tile, tile)
                 bodyMoves.append(newMove)
 
         if move.tile.y - 1 >= 0:
             tile = Game.TILES[move.tile.x][move.tile.y-1]
             if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
-                newMove = Move(tile.piece, tile, tile)
+                newMove = Move.Move(tile.piece, tile, tile)
                 
                 bodyMoves.append(newMove)
         
         if move.tile.y+1 < Game.ROW_COUNT:
             tile = Game.TILES[move.tile.x][move.tile.y+1]
             if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
-                newMove = Move(tile.piece, tile, tile)
+                newMove = Move.Move(tile.piece, tile, tile)
                 
                 bodyMoves.append(newMove)
         print(bodyMoves)
         if len(bodyMoves) == 0:
             bodyMoves = None
+        return bodyMoves
+    
+
+    def bodyPlacementMoves(self, move):
+        #the AI checks just around the piece if he can place the body
+        bodyMoves = []
+        if move.tile.x - 1 >= 0:
+            tile = Game.TILES[move.tile.x-1][move.tile.y]
+            if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
+                newMove = Move.Move(tile.piece, tile, tile)
+                bodyMoves.append(newMove)
+        
+        if move.tile.x+1 < Game.COLUMN_COUNT:
+            tile = Game.TILES[move.tile.x+1][move.tile.y]
+            if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
+                newMove = Move.Move(tile.piece, tile, tile)
+                bodyMoves.append(newMove)
+
+        if move.tile.y - 1 >= 0:
+            tile = Game.TILES[move.tile.x][move.tile.y-1]
+            if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
+                newMove = Move.Move(tile.piece, tile, tile)
+                
+                bodyMoves.append(newMove)
+        
+        if move.tile.y+1 < Game.ROW_COUNT:
+            tile = Game.TILES[move.tile.x][move.tile.y+1]
+            if tile.piece is not None and not tile.piece.dead and tile.piece is not self:
+                newMove = Move.Move(tile.piece, tile, tile)
+                
+                bodyMoves.append(newMove)
+        print(bodyMoves)
+        if len(bodyMoves) == 0:
+            bodyMoves = None
+        move.bodyMoves = bodyMoves
         return bodyMoves
 
 
@@ -212,7 +281,7 @@ class Militants(Piece):
             if destination.isCenter():
                 continue
 
-            newMove = Move(self, destination, Game.TILES[self.x][self.y])
+            newMove = Move.Move(self, destination, Game.TILES[self.x][self.y])
             movesList.append(newMove)
         return movesList
     
@@ -231,14 +300,13 @@ class Diplomat(Piece):
     def captureEvent(self, movesList, destination):
         #Diplomat cannot attack, that is move, friendly pieces or dead pieces
         if destination.piece.color != self.color and not destination.piece.dead:
-            newMove = Move(self, destination, Game.TILES[self.x][self.y])
+            newMove = Move.Move(self, destination, Game.TILES[self.x][self.y])
             movesList.append(newMove)
         
 
     def doMove(self, move):
         #Diplomat does not kill pieces
-        self.x = move.tile.x
-        self.y = move.tile.y
+        self.takeMoveCoordinates(move)
         bodyMoves = None
         if move.tile.piece is not None:
             bodyMoves = []
@@ -247,7 +315,7 @@ class Diplomat(Piece):
                     if destination.piece is not None and destination.piece is not self or destination.isCenter():
                         continue
 
-                    newMove = Move(move.tile.piece, destination, Game.TILES[move.tile.x][move.tile.y])
+                    newMove = Move.Move(move.tile.piece, destination, Game.TILES[move.tile.x][move.tile.y])
                     bodyMoves.append(newMove)
 
         return bodyMoves
@@ -262,5 +330,5 @@ class Necromobile(Piece):
         
         #Necromobile can only attack dead pieces
         if destination.piece.dead:
-            newMove = Move(self, destination, Game.TILES[self.x][self.y])
+            newMove = Move.Move(self, destination, Game.TILES[self.x][self.y])
             movesList.append(newMove)
