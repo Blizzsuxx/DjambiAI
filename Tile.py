@@ -68,6 +68,8 @@ class CustomButton(QtWidgets.QPushButton):
             Game.SELECTED_PIECE_MOVES = None
             Game.CURRENT_STATE = Game.STATES.select
             print("Right Button Clicked")
+            bestValue, bestNode = Game.MINMAX.getMove()
+            bestNode.move.execute()
             Game.draw()
 
 

@@ -1,3 +1,4 @@
+
 from enum import Enum
 import copy
 class Game:
@@ -10,7 +11,7 @@ class Game:
     STATES = Enum('STATES', 'select move place')
 
     HEURISTICS_UPPER_BOUND = 168
-
+    MINMAX = None
 
 
     CURRENT_STATE = STATES.select

@@ -70,7 +70,7 @@ def main():
 
     doAction.setMinimumSize(QtCore.QSize(Game.TYLE_SIZE, Game.TYLE_SIZE))
     undoAction.setMinimumSize(QtCore.QSize(Game.TYLE_SIZE, Game.TYLE_SIZE))
-    
+    Game.MINMAX = m
 
     read = QSpinBox()
 
