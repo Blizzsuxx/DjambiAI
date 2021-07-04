@@ -17,6 +17,7 @@ class Game:
     MOVE_START_TIME = None
     WAIT_TIME = 5
     DROP_RATE = 15
+    LAST_MOVE = []
 
     CURRENT_STATE = STATES.select
 
@@ -80,3 +81,14 @@ class Game:
         while Game.PLAYERS[Game.CURRENT_PLAYER].isChiefDead():
             Game.CURRENT_PLAYER = (Game.CURRENT_PLAYER + 1) % len(Game.PLAYERS)
         return Game.CURRENT_PLAYER
+    
+    @staticmethod
+    def getPreviousPlayer():
+        Game.CURRENT_PLAYER = (Game.CURRENT_PLAYER - 1) % len(Game.PLAYERS)
+        while Game.PLAYERS[Game.CURRENT_PLAYER].isChiefDead():
+            Game.CURRENT_PLAYER = (Game.CURRENT_PLAYER - 1) % len(Game.PLAYERS)
+        return Game.CURRENT_PLAYER
+    
+    @staticmethod
+    def getLordPlayer():
+        return Game.getPlayerOfColor(Game.CENTER_TILE.piece.color)

@@ -67,18 +67,22 @@ def main():
     doAction.setText("Do")
     undoAction = QPushButton()
     undoAction.setText("Undo")
-
+    skipAction = QPushButton()
+    skipAction.setText("Skip")
+    skipAction.setMinimumSize(QtCore.QSize(Game.TYLE_SIZE, Game.TYLE_SIZE))
     doAction.setMinimumSize(QtCore.QSize(Game.TYLE_SIZE, Game.TYLE_SIZE))
     undoAction.setMinimumSize(QtCore.QSize(Game.TYLE_SIZE, Game.TYLE_SIZE))
+    
     Game.MINMAX = m
 
-    read = QSpinBox()
 
-    doAction.clicked.connect(lambda : m.doMove(read.value))
-    undoAction.clicked.connect(lambda : m.undoMove(read.value))
+    doAction.clicked.connect(CustomButton.doBestMove)
+    undoAction.clicked.connect(CustomButton.undoMove)
+    skipAction.clicked.connect(CustomButton.skip)
+
     grid.addWidget(doAction)
     grid.addWidget(undoAction)
-    grid.addWidget(read)
+    grid.addWidget(skipAction)
 
     currentPlayerLabel = QLabel()
     grid.addWidget(currentPlayerLabel)

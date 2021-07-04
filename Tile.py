@@ -39,6 +39,47 @@ class CustomButton(QtWidgets.QPushButton):
         print(self.tile.x, self.tile.y)
         return
     
+    @staticmethod
+    def skip():
+        Game.getNextPlayer()
+        Game.MINMAX.root = Node(None, Game.CURRENT_PLAYER)
+        Game.CURRENT_PLAYER_LABEL.setText(Game.PLAYERS[Game.CURRENT_PLAYER].color.name)
+
+        Game.draw()
+
+    @staticmethod
+    def undoMove():
+        Game.getPreviousPlayer()
+        Game.LAST_MOVE.pop().undo()
+        Game.MINMAX.root = Node(None, Game.CURRENT_PLAYER)
+        Game.CURRENT_PLAYER_LABEL.setText(Game.PLAYERS[Game.CURRENT_PLAYER].color.name)
+        Game.draw()
+        
+    @staticmethod
+    def doBestMove():
+        #do what you want here
+            if Game.CURRENT_STATE == Game.STATES.place:
+                return
+            Game.SELECTED_PIECE_MOVES = None
+            Game.CURRENT_STATE = Game.STATES.select
+
+            Game.MOVE_START_TIME = time.time()
+            bestValue, bestNode = Game.MINMAX.getMove()
+            bestNode.chosen.move.execute()
+            if(sum(bestValue) != Game.HEURISTICS_UPPER_BOUND):
+                print("Right Button Clicked", bestValue)
+            Game.LAST_MOVE.append(bestNode.chosen.move)
+            Game.getNextPlayer()
+            Game.MINMAX.root = Node(None, Game.CURRENT_PLAYER)
+            Game.CURRENT_PLAYER_LABEL.setText(Game.PLAYERS[Game.CURRENT_PLAYER].color.name)
+
+            Game.draw()
+
+            Game.TILES_VIEW[bestNode.chosen.move.tileFrom.x][bestNode.chosen.move.tileFrom.y].setColor("orange")
+            Game.TILES_VIEW[bestNode.chosen.move.tile.x][bestNode.chosen.move.tile.y].setColor("purple")
+            if bestNode.chosen.move.bodyMoves:
+                Game.TILES_VIEW[bestNode.chosen.move.bodyMoves.tileFrom.x][bestNode.chosen.move.bodyMoves.tileFrom.y].setColor("orange")
+                Game.TILES_VIEW[bestNode.chosen.move.bodyMoves.tile.x][bestNode.chosen.move.bodyMoves.tile.y].setColor("purple")
 
 
     def mousePressEvent(self, QMouseEvent):
@@ -64,28 +105,7 @@ class CustomButton(QtWidgets.QPushButton):
                     Game.CURRENT_STATE = Game.STATES.select
                     Game.draw()
         elif QMouseEvent.button() == QtCore.Qt.RightButton:
-            #do what you want here
-            if Game.CURRENT_STATE == Game.STATES.place:
-                return
-            Game.SELECTED_PIECE_MOVES = None
-            Game.CURRENT_STATE = Game.STATES.select
-
-            Game.MOVE_START_TIME = time.time()
-            bestValue, bestNode = Game.MINMAX.getMove()
-            bestNode.chosen.move.execute()
-            if(sum(bestValue) != Game.HEURISTICS_UPPER_BOUND):
-                print("Right Button Clicked", bestValue)
-            Game.getNextPlayer()
-            Game.MINMAX.root = Node(None, Game.CURRENT_PLAYER)
-            Game.CURRENT_PLAYER_LABEL.setText(Game.PLAYERS[Game.CURRENT_PLAYER].color.name)
-
-            Game.draw()
-
-            Game.TILES_VIEW[bestNode.chosen.move.tileFrom.x][bestNode.chosen.move.tileFrom.y].setColor("orange")
-            Game.TILES_VIEW[bestNode.chosen.move.tile.x][bestNode.chosen.move.tile.y].setColor("purple")
-            if bestNode.chosen.move.bodyMoves:
-                Game.TILES_VIEW[bestNode.chosen.move.bodyMoves.tileFrom.x][bestNode.chosen.move.bodyMoves.tileFrom.y].setColor("orange")
-                Game.TILES_VIEW[bestNode.chosen.move.bodyMoves.tile.x][bestNode.chosen.move.bodyMoves.tile.y].setColor("purple")
+            self.doBestMove()
 
 
 
