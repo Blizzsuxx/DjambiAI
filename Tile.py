@@ -74,8 +74,14 @@ class CustomButton(QtWidgets.QPushButton):
             Game.CURRENT_PLAYER += 1
             Game.CURRENT_PLAYER %=4
             Game.MINMAX.root = Node(None, Game.CURRENT_PLAYER)
-            #print(bestNode.move.piece.__class__.__name__, bestNode.move.tileFrom.x, bestNode.move.tileFrom.y, bestNode.move.tile.x, bestNode.move.tile.y, bestNode.values)
             Game.draw()
+
+            Game.TILES_VIEW[bestNode.chosen.move.tileFrom.x][bestNode.chosen.move.tileFrom.y].setColor("orange")
+            Game.TILES_VIEW[bestNode.chosen.move.tile.x][bestNode.chosen.move.tile.y].setColor("purple")
+            if bestNode.chosen.move.bodyMoves:
+                Game.TILES_VIEW[bestNode.chosen.move.body.tileFrom.x][bestNode.chosen.move.body.tileFrom.y].setColor("orange")
+                Game.TILES_VIEW[bestNode.chosen.move.bodyMoves.tileFrom.x][bestNode.chosen.move.bodyMoves.tileFrom.y].setColor("purple")
+
 
 
 
