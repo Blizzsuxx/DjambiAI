@@ -10,14 +10,15 @@ class Game:
     DEPTH = 3
     STATES = Enum('STATES', 'select move place')
 
-    HEURISTICS_UPPER_BOUND = 456
+    HEURISTICS_UPPER_BOUND = 504
     MINMAX = None
     CURRENT_PLAYER = 0
     CURRENT_PLAYER_LABEL = None
     MOVE_START_TIME = None
-    WAIT_TIME = 5
-    DROP_RATE = 15
+    WAIT_TIME = 7
+    DROP_RATE = 0
     LAST_MOVE = []
+    CURRENT_PLAYER_BACKUP = None
 
     CURRENT_STATE = STATES.select
 
@@ -74,21 +75,59 @@ class Game:
             if player.color == color:
                 return player
     
+    @staticmethod
+    def getPlayerOfColorId(color):
+        for i in range(len(Game.PLAYERS)):
+            player = Game.PLAYERS[i]
+            if player.color == color:
+                return i
+    
     
     @staticmethod
     def getNextPlayer():
-        Game.CURRENT_PLAYER = (Game.CURRENT_PLAYER + 1) % len(Game.PLAYERS)
+        lord = Game.getLordPlayerId()
+        if lord is not None:
+            print("AA")
+            if Game.CURRENT_PLAYER_BACKUP is None:
+                Game.CURRENT_PLAYER_BACKUP = Game.CURRENT_PLAYER
+                Game.CURRENT_PLAYER = lord
+            else:
+                Game.CURRENT_PLAYER = Game.CURRENT_PLAYER_BACKUP
+                Game.CURRENT_PLAYER = (Game.CURRENT_PLAYER + 1) % len(Game.PLAYERS)
+                if Game.CURRENT_PLAYER == lord:
+                    Game.CURRENT_PLAYER = (Game.CURRENT_PLAYER + 1) % len(Game.PLAYERS)
+                Game.CURRENT_PLAYER_BACKUP = None
+        else:
+            Game.CURRENT_PLAYER = (Game.CURRENT_PLAYER + 1) % len(Game.PLAYERS)
+            Game.CURRENT_PLAYER_BACKUP = None
         while Game.PLAYERS[Game.CURRENT_PLAYER].isChiefDead():
             Game.CURRENT_PLAYER = (Game.CURRENT_PLAYER + 1) % len(Game.PLAYERS)
         return Game.CURRENT_PLAYER
     
     @staticmethod
     def getPreviousPlayer():
-        Game.CURRENT_PLAYER = (Game.CURRENT_PLAYER - 1) % len(Game.PLAYERS)
+        lord = Game.getLordPlayerId()
+        if lord is not None:
+            if Game.CURRENT_PLAYER_BACKUP is None:
+                Game.CURRENT_PLAYER_BACKUP = Game.CURRENT_PLAYER
+                Game.CURRENT_PLAYER = lord
+            else:
+                Game.CURRENT_PLAYER = Game.CURRENT_PLAYER_BACKUP
+                Game.CURRENT_PLAYER = (Game.CURRENT_PLAYER - 1) % len(Game.PLAYERS)
+                Game.CURRENT_PLAYER_BACKUP = None
+        else:
+            Game.CURRENT_PLAYER = (Game.CURRENT_PLAYER - 1) % len(Game.PLAYERS)
         while Game.PLAYERS[Game.CURRENT_PLAYER].isChiefDead():
             Game.CURRENT_PLAYER = (Game.CURRENT_PLAYER - 1) % len(Game.PLAYERS)
         return Game.CURRENT_PLAYER
     
     @staticmethod
     def getLordPlayer():
-        return Game.getPlayerOfColor(Game.CENTER_TILE.piece.color)
+        if Game.CENTER_TILE.piece:
+            return Game.getPlayerOfColor(Game.CENTER_TILE.piece.color)
+    
+
+    @staticmethod
+    def getLordPlayerId():
+        if Game.CENTER_TILE.piece:
+            return Game.getPlayerOfColorId(Game.CENTER_TILE.piece.color)

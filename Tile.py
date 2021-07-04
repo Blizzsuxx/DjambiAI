@@ -66,8 +66,7 @@ class CustomButton(QtWidgets.QPushButton):
             Game.MOVE_START_TIME = time.time()
             bestValue, bestNode = Game.MINMAX.getMove()
             bestNode.chosen.move.execute()
-            if(sum(bestValue) != Game.HEURISTICS_UPPER_BOUND):
-                print("Right Button Clicked", bestValue)
+            
             Game.LAST_MOVE.append(bestNode.chosen.move)
             Game.getNextPlayer()
             Game.MINMAX.root = Node(None, Game.CURRENT_PLAYER)

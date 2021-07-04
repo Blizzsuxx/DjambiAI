@@ -112,6 +112,19 @@ class MinMaxTree:
         for player in Game.PLAYERS:
             if player.isChiefDead():
                 numberOfSurvivors -= 1
+        
+        lord = Game.getLordPlayer()
+        if lord is None:
+            for i in range(len(Game.PLAYERS)):
+                player = Game.PLAYERS[i]
+                if not player.isChiefDead():
+                    node.values[i] += 48 // (numberOfSurvivors+1)
+        else:
+            for i in range(len(Game.PLAYERS)):
+                player = Game.PLAYERS[i]
+                if player is lord:
+                    node.values[i] += 48 
+
         for i in range(len(Game.PLAYERS)):
             player = Game.PLAYERS[i]
             for piece in player.pieces:
@@ -158,6 +171,7 @@ class MinMaxTree:
                                     node.values[j] += 18 // numberOfSurvivors
                                 else:
                                     node.values[j] += 30 // numberOfSurvivors
+
         
                                 
                 
