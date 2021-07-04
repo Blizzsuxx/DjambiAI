@@ -24,7 +24,7 @@ class CustomButton(QtWidgets.QPushButton):
     def clicked_event(self) -> None:
 
         Game.draw()
-        if self.tile.piece is not None and not self.tile.piece.dead:
+        if self.tile.piece is not None and not self.tile.piece.dead and Game.PLAYERS[Game.CURRENT_PLAYER].color == self.tile.piece.color:
             Game.CURRENT_STATE = Game.STATES.move
             moves = self.tile.piece.moves()
             Game.SELECTED_PIECE_MOVES = moves
@@ -88,8 +88,8 @@ class CustomButton(QtWidgets.QPushButton):
             elif Game.CURRENT_STATE == Game.STATES.move:
                 
                 bodyMoves = self.tile.doMove()
-                Game.draw()
                 Game.CURRENT_STATE = Game.STATES.select
+                Game.draw()
                 if bodyMoves is not None:
                     Game.CURRENT_STATE = Game.STATES.place
                     for move in bodyMoves:
@@ -97,11 +97,20 @@ class CustomButton(QtWidgets.QPushButton):
                             Game.TILES_VIEW[move.tile.x][move.tile.y].setColor("purple")
                         else:
                             Game.TILES_VIEW[move.tile.x][move.tile.y].setColor("orange")
+                elif Game.PREVIOUS_MOVE:
+                    
+                    Game.PREVIOUS_MOVE.execute()
+                    Game.LAST_MOVE.append(Game.PREVIOUS_MOVE)
+                    Game.PREVIOUS_MOVE = None
+                    CustomButton.skip()
+                    Game.draw()
                 Game.SELECTED_PIECE_MOVES = bodyMoves
+                
             elif Game.CURRENT_STATE == Game.STATES.place:
                 playerPickedAvailableTile = self.tile.doMoveBody()
                 if playerPickedAvailableTile or isinstance(Game.PREVIOUS_MOVE.piece, Reporter):
                     Game.CURRENT_STATE = Game.STATES.select
+                    CustomButton.skip()
                     Game.draw()
         elif QMouseEvent.button() == QtCore.Qt.RightButton:
             self.doBestMove()
@@ -126,20 +135,23 @@ class Tile():
         for move in Game.SELECTED_PIECE_MOVES:
             if move.tile is self:
                 bodyPlacementMoves = move.piece.doMove(move)
-                self.piece = move.piece
-                move.tileFrom.piece = None
+                #self.piece = move.piece
+                #move.tileFrom.piece = None
 
                 Game.PREVIOUS_MOVE = move
+                move.bodyMoves = bodyPlacementMoves
         return bodyPlacementMoves
     
     def doMoveBody(self):
         for move in Game.SELECTED_PIECE_MOVES:
             if move.tile is self:
                 
-                move.piece.doMove(move)
-                self.piece = move.piece
-                if not isinstance(Game.PREVIOUS_MOVE.piece, Reporter): 
-                    move.tileFrom.piece = Game.PREVIOUS_MOVE.piece
+                #move.piece.doMove(move)
+                
+                Game.PREVIOUS_MOVE.bodyMoves = move
+                Game.PREVIOUS_MOVE.execute()
+                Game.LAST_MOVE.append(Game.PREVIOUS_MOVE)
+                Game.PREVIOUS_MOVE = None
                 return True
         return False
     

@@ -94,10 +94,10 @@ class Piece:
 
 
     def doMove(self, move):
-        self.takeMoveCoordinates(move)
+        #self.takeMoveCoordinates(move)
         bodyMoves = None
         if move.tile.piece is not None:
-            move.tile.piece.dead = True
+            #move.tile.piece.dead = True
             bodyMoves = []
             for column in Game.TILES:
                 for destination in column:
@@ -218,10 +218,10 @@ class Assassin(Piece):
 
     #assasin puts the body where he came from
     def doMove(self, move):
-        self.takeMoveCoordinates(move)
+        #self.takeMoveCoordinates(move)
         bodyMoves = None
         if move.tile.piece is not None:
-            move.tile.piece.dead = True
+            #move.tile.piece.dead = True
             bodyMoves = []
             newMove = Move.Move(move.tile.piece,Game.TILES[move.tileFrom.x][move.tileFrom.y], Game.TILES[move.tile.x][move.tile.y])
             bodyMoves.append(newMove)
@@ -251,7 +251,7 @@ class Reporter(Piece):
     
 
     def doMove(self, move):
-        self.takeMoveCoordinates(move)
+        #self.takeMoveCoordinates(move)
         bodyMoves = []
         if move.tile.x - 1 >= 0:
             tile = Game.TILES[move.tile.x-1][move.tile.y]
@@ -400,7 +400,7 @@ class Diplomat(Piece):
 
     def doMove(self, move):
         #Diplomat does not kill pieces
-        self.takeMoveCoordinates(move)
+        #self.takeMoveCoordinates(move)
         bodyMoves = None
         if move.tile.piece is not None:
             bodyMoves = []
