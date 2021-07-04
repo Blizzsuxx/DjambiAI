@@ -41,18 +41,19 @@ class Move:
                 
         self.tile.piece = self.piece
         self.tileFrom.piece = None
-        #print("DO")
-        #print(self.piece.__class__.__name__, self.tileFrom.x, self.tileFrom.y, self.tile.x, self.tile.y)
-        #if self.tileFrom.x == 0 and self.tileFrom.y == 0 and self.tile.x == 1 and self.tile.y == 1 and isinstance(self.piece, Piece.Chief):
-            #print("AAAA")
+        print("DO")
+        print(self.piece.__class__.__name__, self.tileFrom.x, self.tileFrom.y, self.tile.x, self.tile.y)
+
 
         if self.bodyMoves:
             self.bodyMoves.piece.takeMoveCoordinates(self.bodyMoves)
             self.bodyMoves.tile.piece = self.bodyMoves.piece
-            #print(self.bodyMoves.tile.x, self.bodyMoves.tile.y)
+            print(self.bodyMoves.tile.x, self.bodyMoves.tile.y)
 
             if not isinstance(self.piece, Piece.Reporter): 
                 self.bodyMoves.tileFrom.piece = self.piece
+            else:
+                self.bodyMoves.tile.piece.dead = True
     
 
     def undo(self):
@@ -64,6 +65,8 @@ class Move:
             self.bodyMoves.tileFrom.piece = self.bodyMoves.piece
             if not isinstance(self.piece, Piece.Reporter): 
                 self.bodyMoves.tile.piece = None
+            else:
+                self.bodyMoves.tile.piece.dead = False
         self.piece.undoMoveCoordinates(self)
 
 
@@ -87,8 +90,8 @@ class Move:
                 #print("undo", ownerOfDead.pieces, ownerOfKiller.pieces)
 
 
-            #print("UNDO")
-            #print(self.piece.__class__.__name__, self.tileFrom.x, self.tileFrom.y, self.tile.x, self.tile.y)
+            print("UNDO")
+            print(self.piece.__class__.__name__, self.tileFrom.x, self.tileFrom.y, self.tile.x, self.tile.y)
             #if self.bodyMoves:
                 #print(self.bodyMoves.piece.__class__.__name__, self.bodyMoves.tileFrom.x, self.bodyMoves.tileFrom.y, self.bodyMoves.tile.x, self.bodyMoves.tile.y)
         self.tileFrom.piece = self.piece
