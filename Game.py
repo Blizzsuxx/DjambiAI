@@ -7,12 +7,16 @@ class Game:
     COLUMN_COUNT = 9
     COLOR_TILE = ["black", "white"]
     TYLE_SIZE = 100
-    DEPTH = 2
+    DEPTH = 3
     STATES = Enum('STATES', 'select move place')
 
-    HEURISTICS_UPPER_BOUND = 228
+    HEURISTICS_UPPER_BOUND = 456
     MINMAX = None
     CURRENT_PLAYER = 0
+    CURRENT_PLAYER_LABEL = None
+    MOVE_START_TIME = None
+    WAIT_TIME = 5
+    DROP_RATE = 15
 
     CURRENT_STATE = STATES.select
 
@@ -61,3 +65,18 @@ class Game:
     @staticmethod
     def copyTiles(tiles):
         return copy.deepcopy(tiles)
+    
+
+    @staticmethod
+    def getPlayerOfColor(color):
+        for player in Game.PLAYERS:
+            if player.color == color:
+                return player
+    
+    
+    @staticmethod
+    def getNextPlayer():
+        Game.CURRENT_PLAYER = (Game.CURRENT_PLAYER + 1) % len(Game.PLAYERS)
+        while Game.PLAYERS[Game.CURRENT_PLAYER].isChiefDead():
+            Game.CURRENT_PLAYER = (Game.CURRENT_PLAYER + 1) % len(Game.PLAYERS)
+        return Game.CURRENT_PLAYER

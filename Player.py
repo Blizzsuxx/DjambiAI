@@ -4,11 +4,11 @@ from Game import Game
 
 class Player:
 
-    __slots__ = 'pieces'
+    __slots__ = 'pieces', 'color'
 
     def __init__(self, color) -> None:
         self.pieces = [None]*9
-
+        self.color = color
         x,y = 0,0
         i,j = 1,1
 
@@ -39,3 +39,9 @@ class Player:
         self.pieces[6] = Militants(color, x+i+i, y+j) #7
         self.pieces[7] = Militants(color, x, y+j+j) #8
         self.pieces[8] = Militants(color, x+i, y+j+j) #9
+    
+    def isChiefDead(self):
+        for piece in self.pieces:
+            if isinstance(piece, Chief) and piece.dead:
+                return True
+        return False

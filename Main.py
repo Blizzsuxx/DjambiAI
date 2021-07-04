@@ -79,7 +79,15 @@ def main():
     grid.addWidget(doAction)
     grid.addWidget(undoAction)
     grid.addWidget(read)
-    
+
+    currentPlayerLabel = QLabel()
+    grid.addWidget(currentPlayerLabel)
+    Game.CURRENT_PLAYER_LABEL = currentPlayerLabel
+
+
+    Game.CURRENT_PLAYER_LABEL.setText(Game.PLAYERS[Game.CURRENT_PLAYER].color.name)
+
+
     Game.draw()
     window.move(500,50)
     app.exec()

@@ -4,6 +4,7 @@ from Piece import Diplomat, Reporter
 from Game import Game
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
+import time
 
 class CustomButton(QtWidgets.QPushButton):
 
@@ -68,19 +69,23 @@ class CustomButton(QtWidgets.QPushButton):
                 return
             Game.SELECTED_PIECE_MOVES = None
             Game.CURRENT_STATE = Game.STATES.select
+
+            Game.MOVE_START_TIME = time.time()
             bestValue, bestNode = Game.MINMAX.getMove()
             bestNode.chosen.move.execute()
-            print("Right Button Clicked")
-            Game.CURRENT_PLAYER += 1
-            Game.CURRENT_PLAYER %=4
+            if(sum(bestValue) != Game.HEURISTICS_UPPER_BOUND):
+                print("Right Button Clicked", bestValue)
+            Game.getNextPlayer()
             Game.MINMAX.root = Node(None, Game.CURRENT_PLAYER)
+            Game.CURRENT_PLAYER_LABEL.setText(Game.PLAYERS[Game.CURRENT_PLAYER].color.name)
+
             Game.draw()
 
             Game.TILES_VIEW[bestNode.chosen.move.tileFrom.x][bestNode.chosen.move.tileFrom.y].setColor("orange")
             Game.TILES_VIEW[bestNode.chosen.move.tile.x][bestNode.chosen.move.tile.y].setColor("purple")
             if bestNode.chosen.move.bodyMoves:
-                Game.TILES_VIEW[bestNode.chosen.move.body.tileFrom.x][bestNode.chosen.move.body.tileFrom.y].setColor("orange")
-                Game.TILES_VIEW[bestNode.chosen.move.bodyMoves.tileFrom.x][bestNode.chosen.move.bodyMoves.tileFrom.y].setColor("purple")
+                Game.TILES_VIEW[bestNode.chosen.move.bodyMoves.tileFrom.x][bestNode.chosen.move.bodyMoves.tileFrom.y].setColor("orange")
+                Game.TILES_VIEW[bestNode.chosen.move.bodyMoves.tile.x][bestNode.chosen.move.bodyMoves.tile.y].setColor("purple")
 
 
 

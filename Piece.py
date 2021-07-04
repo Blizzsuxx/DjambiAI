@@ -12,13 +12,14 @@ class Piece:
 
 
 
-    __slots__ = 'color', 'x', 'y', 'dead'
+    __slots__ = 'color', 'x', 'y', 'dead', 'originalColor'
 
     def __init__(self, color, x, y) -> None:
         self.color = color
         self.x = x
         self.y = y
         self.dead = False
+        self.originalColor = [color]
     
 
     def raycast(self, directionX, directionY):
@@ -54,7 +55,7 @@ class Piece:
         currentPointY += directionY
         while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT and not self.dead:
             destination = Game.TILES[currentPointX][currentPointY]
-            if destination.piece is not None and destination.piece.color != self.color:
+            if destination.piece is not None and destination.piece.color == self.color:
                 return movesList
             if destination.piece is not None:
                 #if destination.piece.color != tile.piece.color:
@@ -157,6 +158,8 @@ class Chief(Piece):
 
     def raycast(self, directionX, directionY):
         movesList = []
+        if Game.getPlayerOfColor(self.color).isChiefDead():
+            return movesList
         currentPointX = self.x
         currentPointY = self.y
         currentPointX += directionX
@@ -180,13 +183,15 @@ class Chief(Piece):
 
     def raycastAI(self, directionX, directionY):
         movesList = []
+        if Game.getPlayerOfColor(self.color).isChiefDead():
+            return movesList
         currentPointX = self.x
         currentPointY = self.y
         currentPointX += directionX
         currentPointY += directionY
         while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT and not self.dead:
             destination = Game.TILES[currentPointX][currentPointY]
-            if destination.piece is not None and destination.piece.color != self.color:
+            if destination.piece is not None and destination.piece.color == self.color:
                 return movesList
             if destination.piece is not None:
                 #if destination.piece.color != tile.piece.color:
@@ -356,7 +361,7 @@ class Militants(Piece):
         while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT and currentStep < maximumNumberOfSteps and not self.dead:
             destination = Game.TILES[currentPointX][currentPointY]
             currentStep+=1
-            if destination.piece is not None and destination.piece.color != self.color:
+            if destination.piece is not None and destination.piece.color == self.color:
                 return movesList
             if destination.piece is not None:
                 #if destination.piece.color != tile.piece.color:
