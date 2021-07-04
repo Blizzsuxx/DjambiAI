@@ -62,7 +62,7 @@ def main():
             button.tile.piece = piece
     
     m = MinMaxTree()
-    m.getMove()
+    #m.getMove()
     doAction = QPushButton()
     doAction.setText("Do")
     undoAction = QPushButton()

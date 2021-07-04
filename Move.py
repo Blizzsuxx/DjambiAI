@@ -21,27 +21,43 @@ class Move:
     
     def execute(self):
         self.piece.takeMoveCoordinates(self)
-        if self.tile.piece is not None:
+        if self.tile.piece is not None and not isinstance(self.piece, Piece.Diplomat):
             self.tile.piece.dead = True
         self.tile.piece = self.piece
         self.tileFrom.piece = None
+        print("DO")
+        print(self.piece.__class__.__name__, self.tileFrom.x, self.tileFrom.y, self.tile.x, self.tile.y)
+        
 
         if self.bodyMoves:
             self.bodyMoves.piece.takeMoveCoordinates(self.bodyMoves)
             self.bodyMoves.tile.piece = self.bodyMoves.piece
+            print(self.bodyMoves.tile.x, self.bodyMoves.tile.y)
+
             if not isinstance(self.piece, Piece.Reporter): 
                 self.bodyMoves.tileFrom.piece = self.piece
     
 
     def undo(self):
+        
         if self.bodyMoves:
             self.bodyMoves.piece.undoMoveCoordinates(self.bodyMoves)
+            #print(self.bodyMoves.tile.x, self.bodyMoves.tile.y)
+
             self.bodyMoves.tileFrom.piece = self.bodyMoves.piece
             if not isinstance(self.piece, Piece.Reporter): 
                 self.bodyMoves.tile.piece = None
         self.piece.undoMoveCoordinates(self)
+
+        
+
+
         if self.tile.piece is not None and not isinstance(self.piece, Piece.Necromobile):
             self.tile.piece.dead = False
+            print("UNDO")
+            print(self.piece.__class__.__name__, self.tileFrom.x, self.tileFrom.y, self.tile.x, self.tile.y)
+            if self.bodyMoves:
+                print(self.bodyMoves.piece.__class__.__name__, self.bodyMoves.tileFrom.x, self.bodyMoves.tileFrom.y, self.bodyMoves.tile.x, self.bodyMoves.tile.y)
         self.tileFrom.piece = self.piece
         if self.tile.piece is self.tileFrom.piece:
             self.tile.piece = None

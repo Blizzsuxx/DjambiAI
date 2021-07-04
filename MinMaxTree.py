@@ -23,67 +23,70 @@ class MinMaxTree:
             self.heuristics(node)
             if node.move:
                 node.move.undo()
-
+                node.chosen = node
             return (node.values, node)
         
 
-
-        for piece in self.root.player.pieces:
-            currentMoves = (piece.moves())
-            
+        moveWasFound = False
+        for piece in node.player.pieces:
+            currentMoves = (piece.movesAI())
             for move in currentMoves:
+                moveWasFound = True
                 move.piece.bodyPlacementMoves(move)
                 if move.bodyMoves:
                     for bodyMove in move.bodyMoves:
                         copyMove = Move(move.piece, move.tile, move.tileFrom)
                         copyMove.bodyMoves = bodyMove
-                        self.root.children.append(Node(copyMove, 0))
+                        node.children.append(Node(copyMove, (playerId+1)%4))
                 else:
-                    self.root.children.append(Node(move, 0))
+                    node.children.append(Node(move, (playerId+1)%4))
                 break
-            break
+            if moveWasFound:
+                break
         best, bestNode = self.getMove(node.children[0], (playerId+1)%4, Game.HEURISTICS_UPPER_BOUND, depth+1)
 
 
 
         firstRun = True
-        for i in range(0, len(self.root.player.pieces)):
-            if firstRun:
-                firstRun = False
-                continue
+        for i in range(0, len(node.player.pieces)):
+            
 
             if best[playerId] >= bound:
                 if node.move:
                     node.move.undo()
+                    bestNode.chosen = node
                 return (best, bestNode)
             
-            piece = self.root.player.pieces[i]
-            currentMoves = (piece.moves())
+            piece = node.player.pieces[i]
+            currentMoves = (piece.movesAI())
             current = None
             for move in currentMoves:
+                if firstRun:
+                    firstRun = False
+                    continue
                 move.piece.bodyPlacementMoves(move)
                 if move.bodyMoves:
                     for bodyMove in move.bodyMoves:
                         copyMove = Move(move.piece, move.tile, move.tileFrom)
                         copyMove.bodyMoves = bodyMove
-                        newNode = Node(copyMove, 0)
+                        newNode = Node(copyMove, (playerId+1)%4)
 
 
-                        self.root.children.append(newNode)
-                        current, currentNode = self.getMove(newNode, (playerId+1)%4, Game.HEURISTICS_UPPER_BOUND - best[playerId])
+                        node.children.append(newNode)
+                        current, currentNode = self.getMove(newNode, (playerId+1)%4, Game.HEURISTICS_UPPER_BOUND - best[playerId], depth+1)
                         if current[playerId] > best[playerId]:
                             best = current
                             bestNode = currentNode
                 else:
-                    newNode = Node(move, 0)
-                    self.root.children.append(newNode)
-                    current = self.getMove(newNode, (playerId+1)%4, Game.HEURISTICS_UPPER_BOUND - best[playerId])
+                    newNode = Node(move, (playerId+1)%4)
+                    node.children.append(newNode)
+                    current, currentNode = self.getMove(newNode, (playerId+1)%4, Game.HEURISTICS_UPPER_BOUND - best[playerId], depth+1)
                     if current[playerId] > best[playerId]:
                         best = current
                         bestNode = currentNode
         if node.move:
             node.move.undo()
-        
+            bestNode.chosen = node
         return (best, bestNode)
             
             
@@ -106,6 +109,8 @@ class MinMaxTree:
                         node.values[i] += 9
                     elif isinstance(piece, Piece.Reporter):
                         node.values[i] += 9
+                    else:
+                        node.values[i] += 15
                 else:
                     for j in range(len(Game.PLAYERS)):
                         otherPlayer = Game.PLAYERS[j]
@@ -120,6 +125,9 @@ class MinMaxTree:
                                 node.values[j] += 3
                             elif isinstance(piece, Piece.Reporter):
                                 node.values[j] += 3
+                            else:
+                                node.values[j] += 5
+                                
                 
 
     def doMove(self, number):

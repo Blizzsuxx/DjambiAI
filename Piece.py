@@ -27,7 +27,7 @@ class Piece:
         currentPointY = self.y
         currentPointX += directionX
         currentPointY += directionY
-        while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT:
+        while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT and not self.dead:
             destination = Game.TILES[currentPointX][currentPointY]
             if destination.piece is not None:
                 #if destination.piece.color != tile.piece.color:
@@ -44,6 +44,34 @@ class Piece:
             movesList.append(newMove)
         return movesList
     
+
+
+    def raycastAI(self, directionX, directionY):
+        movesList = []
+        currentPointX = self.x
+        currentPointY = self.y
+        currentPointX += directionX
+        currentPointY += directionY
+        while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT and not self.dead:
+            destination = Game.TILES[currentPointX][currentPointY]
+            if destination.piece is not None and destination.piece.color != self.color:
+                return movesList
+            if destination.piece is not None:
+                #if destination.piece.color != tile.piece.color:
+                self.captureEvent(movesList, destination)
+                return movesList
+            
+            
+            currentPointX += directionX
+            currentPointY += directionY
+            if destination.isCenter():
+                continue
+
+            newMove = Move.Move(self, destination, Game.TILES[self.x][self.y])
+            movesList.append(newMove)
+        return movesList
+
+    
     def moves(self):
         movesList = []
         for direction in Move.Move.DIRECTIONS:
@@ -51,7 +79,12 @@ class Piece:
 
         return movesList
     
+    def movesAI(self):
+        movesList = []
+        for direction in Move.Move.DIRECTIONS:
+            movesList.extend(self.raycastAI(direction[0], direction[1]))
 
+        return movesList
     # this gets overriden by other pieces
     def captureEvent(self, movesList, destination):
         if not destination.piece.dead:
@@ -91,6 +124,7 @@ class Piece:
 
                     newMove = Move.Move(move.tile.piece, destination, Game.TILES[move.tile.x][move.tile.y])
                     bodyMoves.append(newMove)
+        
         move.bodyMoves = bodyMoves
         return bodyMoves
     
@@ -127,8 +161,33 @@ class Chief(Piece):
         currentPointY = self.y
         currentPointX += directionX
         currentPointY += directionY
-        while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT:
+        while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT and not self.dead:
             destination = Game.TILES[currentPointX][currentPointY]
+            if destination.piece is not None:
+                #if destination.piece.color != tile.piece.color:
+                self.captureEvent(movesList, destination)
+                return movesList
+            
+            
+            currentPointX += directionX
+            currentPointY += directionY
+
+            newMove = Move.Move(self, destination, Game.TILES[self.x][self.y])
+            movesList.append(newMove)
+        return movesList
+    
+
+
+    def raycastAI(self, directionX, directionY):
+        movesList = []
+        currentPointX = self.x
+        currentPointY = self.y
+        currentPointX += directionX
+        currentPointY += directionY
+        while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT and not self.dead:
+            destination = Game.TILES[currentPointX][currentPointY]
+            if destination.piece is not None and destination.piece.color != self.color:
+                return movesList
             if destination.piece is not None:
                 #if destination.piece.color != tile.piece.color:
                 self.captureEvent(movesList, destination)
@@ -167,12 +226,13 @@ class Assassin(Piece):
     
 
     def bodyPlacementMoves(self, move):
-        newMove = Move.Move(move.tile.piece,Game.TILES[move.tileFrom.x][move.tileFrom.y], Game.TILES[move.tile.x][move.tile.y])
-        lista = []
-        lista.append(newMove)
-        newMove.bodyMoves = lista
-        move.bodyMoves = lista
-        return lista
+        if move.tile.piece is not None:
+            newMove = Move.Move(move.tile.piece,Game.TILES[move.tileFrom.x][move.tileFrom.y], Game.TILES[move.tile.x][move.tile.y])
+            lista = []
+            lista.append(newMove)
+            newMove.bodyMoves = lista
+            move.bodyMoves = lista
+            return lista
 
 
 class Reporter(Piece):
@@ -213,7 +273,6 @@ class Reporter(Piece):
                 newMove = Move.Move(tile.piece, tile, tile)
                 
                 bodyMoves.append(newMove)
-        print(bodyMoves)
         if len(bodyMoves) == 0:
             bodyMoves = None
         return bodyMoves
@@ -247,7 +306,6 @@ class Reporter(Piece):
                 newMove = Move.Move(tile.piece, tile, tile)
                 
                 bodyMoves.append(newMove)
-        print(bodyMoves)
         if len(bodyMoves) == 0:
             bodyMoves = None
         move.bodyMoves = bodyMoves
@@ -267,9 +325,39 @@ class Militants(Piece):
         currentPointY += directionY
         maximumNumberOfSteps = 2 #militants can only move for 2 squares
         currentStep = 0
-        while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT and currentStep < maximumNumberOfSteps:
+        while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT and currentStep < maximumNumberOfSteps and not self.dead:
             destination = Game.TILES[currentPointX][currentPointY]
             currentStep+=1
+            if destination.piece is not None:
+                #if destination.piece.color != tile.piece.color:
+                self.captureEvent(movesList, destination)
+                return movesList
+
+            
+            currentPointX += directionX
+            currentPointY += directionY
+            if destination.isCenter():
+                continue
+
+            newMove = Move.Move(self, destination, Game.TILES[self.x][self.y])
+            movesList.append(newMove)
+        return movesList
+    
+
+
+    def raycastAI(self, directionX, directionY):
+        movesList = []
+        currentPointX = self.x
+        currentPointY = self.y
+        currentPointX += directionX
+        currentPointY += directionY
+        maximumNumberOfSteps = 2 #militants can only move for 2 squares
+        currentStep = 0
+        while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT and currentStep < maximumNumberOfSteps and not self.dead:
+            destination = Game.TILES[currentPointX][currentPointY]
+            currentStep+=1
+            if destination.piece is not None and destination.piece.color != self.color:
+                return movesList
             if destination.piece is not None:
                 #if destination.piece.color != tile.piece.color:
                 self.captureEvent(movesList, destination)
@@ -302,7 +390,8 @@ class Diplomat(Piece):
         if destination.piece.color != self.color and not destination.piece.dead:
             newMove = Move.Move(self, destination, Game.TILES[self.x][self.y])
             movesList.append(newMove)
-        
+    
+    
 
     def doMove(self, move):
         #Diplomat does not kill pieces
@@ -319,7 +408,30 @@ class Diplomat(Piece):
                     bodyMoves.append(newMove)
 
         return bodyMoves
+    
 
+    def raycastAI(self, directionX, directionY):
+        movesList = []
+        currentPointX = self.x
+        currentPointY = self.y
+        currentPointX += directionX
+        currentPointY += directionY
+        while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT and not self.dead:
+            destination = Game.TILES[currentPointX][currentPointY]
+            if destination.piece is not None:
+                #if destination.piece.color != tile.piece.color:
+                self.captureEvent(movesList, destination)
+                return movesList
+            
+            
+            currentPointX += directionX
+            currentPointY += directionY
+            if destination.isCenter():
+                continue
+
+            newMove = Move.Move(self, destination, Game.TILES[self.x][self.y])
+            movesList.append(newMove)
+        return movesList
 
 class Necromobile(Piece):
 
@@ -332,3 +444,26 @@ class Necromobile(Piece):
         if destination.piece.dead:
             newMove = Move.Move(self, destination, Game.TILES[self.x][self.y])
             movesList.append(newMove)
+    
+    def raycastAI(self, directionX, directionY):
+        movesList = []
+        currentPointX = self.x
+        currentPointY = self.y
+        currentPointX += directionX
+        currentPointY += directionY
+        while currentPointX >= 0 and currentPointX < Game.COLUMN_COUNT and currentPointY >= 0 and currentPointY < Game.ROW_COUNT and not self.dead:
+            destination = Game.TILES[currentPointX][currentPointY]
+            if destination.piece is not None:
+                #if destination.piece.color != tile.piece.color:
+                self.captureEvent(movesList, destination)
+                return movesList
+            
+            
+            currentPointX += directionX
+            currentPointY += directionY
+            if destination.isCenter():
+                continue
+
+            newMove = Move.Move(self, destination, Game.TILES[self.x][self.y])
+            movesList.append(newMove)
+        return movesList

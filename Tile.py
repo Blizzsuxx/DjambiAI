@@ -1,4 +1,5 @@
 
+from Node import Node
 from Piece import Diplomat, Reporter
 from Game import Game
 from PyQt5 import QtCore
@@ -67,9 +68,13 @@ class CustomButton(QtWidgets.QPushButton):
                 return
             Game.SELECTED_PIECE_MOVES = None
             Game.CURRENT_STATE = Game.STATES.select
-            print("Right Button Clicked")
             bestValue, bestNode = Game.MINMAX.getMove()
-            bestNode.move.execute()
+            bestNode.chosen.move.execute()
+            print("Right Button Clicked")
+            Game.CURRENT_PLAYER += 1
+            Game.CURRENT_PLAYER %=4
+            Game.MINMAX.root = Node(None, Game.CURRENT_PLAYER)
+            #print(bestNode.move.piece.__class__.__name__, bestNode.move.tileFrom.x, bestNode.move.tileFrom.y, bestNode.move.tile.x, bestNode.move.tile.y, bestNode.values)
             Game.draw()
 
 

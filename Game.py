@@ -7,12 +7,12 @@ class Game:
     COLUMN_COUNT = 9
     COLOR_TILE = ["black", "white"]
     TYLE_SIZE = 100
-    DEPTH = 5
+    DEPTH = 2
     STATES = Enum('STATES', 'select move place')
 
-    HEURISTICS_UPPER_BOUND = 168
+    HEURISTICS_UPPER_BOUND = 228
     MINMAX = None
-
+    CURRENT_PLAYER = 0
 
     CURRENT_STATE = STATES.select
 
